@@ -29,10 +29,8 @@ public class UserController {
 
     @PostMapping("/login")
     public String login(@RequestBody UserEntity user){
-        UserEntity userEntity = userRepository.findByusername(user.getUsername());
-        if(Objects.isNull(userEntity))
-            return "failure";
-        return "success";
+        return userService.verify(user);
+
     }
 
 }
