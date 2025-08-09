@@ -17,6 +17,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -24,8 +25,11 @@ public class WebSecurityConfig {
 
     private final UserDetailsService userDetailsService;
 
-    public WebSecurityConfig(UserDetailsService userDetailsService) {
+    private final JwtAutheticationFilter jwtAutheticationFilter;
+
+    public WebSecurityConfig(UserDetailsService userDetailsService, JwtAutheticationFilter jwtAutheticationFilter) {
         this.userDetailsService = userDetailsService;
+        this.jwtAutheticationFilter = jwtAutheticationFilter;
     }
 
     @Bean
@@ -39,6 +43,7 @@ public class WebSecurityConfig {
                 .csrf(csrf -> csrf.disable())  //to disable the csrf.
 //                .formLogin(Customizer.withDefaults()) //Add form based login
                 .httpBasic(Customizer.withDefaults())  //have basic authetication
+                .addFilterBefore(jwtAutheticationFilter, UsernamePasswordAuthenticationFilter.class) //this will for jwt filter should be first work before Usernamepassword filter.
         ;
         return httpSecurity.build();
     }

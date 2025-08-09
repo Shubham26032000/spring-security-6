@@ -17,11 +17,13 @@ public class UserService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     private final AuthenticationManager authenticationManager;
+    private final JwtService jwtService;
 
-    public UserService(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder, AuthenticationManager authenticationManager) {
+    public UserService(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder, AuthenticationManager authenticationManager, JwtService jwtService) {
         this.userRepository = userRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.authenticationManager = authenticationManager;
+        this.jwtService = jwtService;
     }
 
     public UserEntity register(UserEntity user) {
@@ -34,7 +36,7 @@ public class UserService {
                 new UsernamePasswordAuthenticationToken(user.getUsername(),user.getPassword())
         );
         if(authentication.isAuthenticated())
-            return "success";
+            return jwtService.generateToken(user);
         return "failure";
     }
 }
