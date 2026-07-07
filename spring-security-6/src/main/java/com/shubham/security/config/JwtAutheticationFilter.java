@@ -36,12 +36,10 @@ public class JwtAutheticationFilter extends OncePerRequestFilter {
         System.out.println("JwtToken : "+authHeader);//Token is in this header.
         if (authHeader == null || !authHeader.startsWith("Bearer")){   //Token null ignore.
             filterChain.doFilter(request,response);
+            return;
         }
-
         final String jwtToken = authHeader.substring(7);
         final String userName = jwtService.extractUserName(jwtToken);
-        System.out.println("JwtToken : "+jwtToken);
-        System.out.println("userName : "+userName);
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (userName != null && authentication == null){ //If not autheticated
             //Authenticate

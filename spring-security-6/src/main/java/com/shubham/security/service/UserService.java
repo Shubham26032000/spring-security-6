@@ -2,6 +2,7 @@ package com.shubham.security.service;
 
 import com.shubham.security.entity.UserEntity;
 import com.shubham.security.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -9,7 +10,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
-
+@Slf4j
 @Service
 public class UserService {
     private final UserRepository userRepository;
@@ -27,6 +28,7 @@ public class UserService {
     }
 
     public UserEntity register(UserEntity user) {
+        log.info("User request received : userName : {} : password : {}",user.getUsername(),user.getPassword());
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
