@@ -1,6 +1,5 @@
 package com.shubham.security.config;
 
-import com.shubham.security.service.CustomUserDetails;
 import com.shubham.security.service.CustomUserDetailsService;
 import com.shubham.security.service.JwtService;
 import jakarta.servlet.FilterChain;
@@ -9,10 +8,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -33,18 +30,18 @@ public class JwtAutheticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         final String authHeader = request.getHeader("Authorization");
-        System.out.println("JwtToken : "+authHeader);//Token is in this header.
-        if (authHeader == null || !authHeader.startsWith("Bearer")){   //Token null ignore.
-            filterChain.doFilter(request,response);
+        System.out.println("JwtToken : " + authHeader);//Token is in this header.
+        if (authHeader == null || !authHeader.startsWith("Bearer")) {   //Token null ignore.
+            filterChain.doFilter(request, response);
             return;
         }
         final String jwtToken = authHeader.substring(7);
         final String userName = jwtService.extractUserName(jwtToken);
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (userName != null && authentication == null){ //If not autheticated
+        if (userName != null && authentication == null) { //If not autheticated
             //Authenticate
             UserDetails userDetails = customUserDetailsService.loadUserByUsername(userName); //load user from userdetails
-            if (jwtService.isTokenValid(jwtToken,userDetails)){  //Match userdetails with token data.
+            if (jwtService.isTokenValid(jwtToken, userDetails)) {  //Match userdetails with token data.
                 UsernamePasswordAuthenticationToken authenticationToken =
                         new UsernamePasswordAuthenticationToken(
                                 userDetails,
@@ -53,10 +50,10 @@ public class JwtAutheticationFilter extends OncePerRequestFilter {
                 authenticationToken.setDetails(
                         new WebAuthenticationDetailsSource()
                                 .buildDetails(request)); //Session ID for Token
-                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             }
         }
 
-        filterChain.doFilter(request,response);
+        filterChain.doFilter(request, response);
     }
 }
